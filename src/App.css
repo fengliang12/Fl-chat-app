@@ -136,17 +136,42 @@
   color: #888;
   font-style: italic;
   background-color: #f9f9f9;
+  display: flex;
+  align-items: center;
 }
 
 .typing-indicator span {
-  display: inline-block;
-  animation: ellipsis 1.5s infinite;
+  margin-right: 5px;
 }
 
-@keyframes ellipsis {
-  0% { content: '.'; }
-  33% { content: '..'; }
-  66% { content: '...'; }
+.typing-dots {
+  display: inline-flex;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #888;
+  margin: 0 2px;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.typing-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% { 
+    transform: scale(0);
+  } 
+  40% { 
+    transform: scale(1);
+  }
 }
 
 /* 输入框样式 */

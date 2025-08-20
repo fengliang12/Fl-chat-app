@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Message, User } from '../../types';
 import ChatMessageList from './ChatMessageList';
 import ChatInput from './ChatInput';
+import { sendChatMessage } from '../../services/api';
 
 interface ChatBoxProps {
   currentUser: User;
@@ -35,7 +36,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ currentUser }) => {
     }
   }, [messages, currentUser.id]);
 
-  const handleSendMessage = (text: string) => {
+  const handleSendMessage = async (text: string) => {
     const newMessage: Message = {
       id: Date.now().toString(),
       text,
@@ -43,20 +44,36 @@ const ChatBox: React.FC<ChatBoxProps> = ({ currentUser }) => {
       timestamp: new Date(),
     };
 
+    // 添加用户消息到消息列表
     setMessages([...messages, newMessage]);
     setIsTyping(true);
 
-    // 模拟自动回复
-    setTimeout(() => {
-      setIsTyping(false);
-      const autoReply: Message = {
+    try {
+      // 发送消息到DeepSeek API并获取回复
+      const updatedMessages = [...messages, newMessage];
+      const reply = await sendChatMessage(updatedMessages);
+      
+      // 添加AI回复到消息列表
+      const aiReply: Message = {
         id: (Date.now() + 1).toString(),
-        text: `收到你的消息: "${text}"`,
+        text: reply,
+        sender: 'assistant',
+        timestamp: new Date(),
+      };
+      setMessages((prevMessages) => [...prevMessages, aiReply]);
+    } catch (error) {
+      console.error('获取AI回复失败:', error);
+      // 添加错误消息
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: '抱歉，无法获取回复，请稍后再试。',
         sender: 'system',
         timestamp: new Date(),
       };
-      setMessages((prevMessages) => [...prevMessages, autoReply]);
-    }, 1500);
+      setMessages((prevMessages) => [...prevMessages, errorMessage]);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   return (
@@ -67,7 +84,12 @@ const ChatBox: React.FC<ChatBoxProps> = ({ currentUser }) => {
       <ChatMessageList messages={messages} currentUserId={currentUser.id} />
       {isTyping && (
         <div className="typing-indicator">
-          <span>正在输入...</span>
+          <span>正在输入</span>
+          <div className="typing-dots">
+            <div className="typing-dot"></div>
+            <div className="typing-dot"></div>
+            <div className="typing-dot"></div>
+          </div>
         </div>
       )}
       <ChatInput onSendMessage={handleSendMessage} />
