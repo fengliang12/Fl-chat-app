@@ -11,6 +11,7 @@
     "@types/node": "^16.18.126",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
+    "ethers": "^6.9.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-scripts": "5.0.1",
@@ -22,7 +23,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "npm run build && wrangler pages deploy build"
+    "deploy": "npm run build && wrangler pages deploy build",
+    "compile": "hardhat compile",
+    "test:contract": "hardhat test",
+    "deploy:contract": "hardhat run scripts/deploy.js"
   },
   "eslintConfig": {
     "extends": [
@@ -43,6 +47,11 @@
     ]
   },
   "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@openzeppelin/contracts": "^5.0.1",
+    "chai": "^4.3.10",
+    "dotenv": "^16.3.1",
+    "hardhat": "^2.19.2",
     "wrangler": "^4.31.0"
   }
 }
